@@ -17,17 +17,19 @@
         <th scope="col">Title</th>
         <th scope="col">Author</th>
         <th scope="col">Genre</th>
+        <th scope="col">Borrow Date</th>
         <th scope="col">Return Buttons</th>
         </tr>
     </thead>
     <tbody>
-        {% for book in books %}
+        {% for copy in books %}
         <tr>
         <th scope="row">{{forloop.counter}}</th>
-        <td><a href="/book/{{book.id}}">{{book.title}}</a></td>
-        <td>{{book.author}}</td>
-        <td>{{book.genre}}</td>
-        <td><button class="btn btn-primary" onclick="returnBook({{book.bid}})">Return {{book.title}}</button></td>
+        <td><a href="/book/{{copy.book.id}}">{{copy.book.title}}</a></td>
+        <td>{{copy.book.author}}</td>
+        <td>{{copy.book.genre}}</td>
+        <td>{{copy.borrow_date}}</td>
+        <td><button class="btn btn-primary" onclick="returnBook({{copy.book.bid}})">Return {{copy.book.title}}</button></td>
         </tr>
         {% endfor %}
     </tbody>

@@ -19,7 +19,6 @@ def bookDetailView(request, bid):
     # START YOUR CODE HERE
     
     
-    # END YOUR CODE HERE
     return render(request,template_name, context=context)
 
 
@@ -32,30 +31,27 @@ def bookListView(request):
     # START YOUR CODE HERE
     
     
-    # END YOUR CODE HERE
     return render(request,template_name, context=context)
 
 @login_required
 def viewLoanedBooks(request):
     template_name='store/loaned_books.html'
-    # profile=request.user.profile
     context={
         'books':None,
     }
     '''
     The above key books in dictionary context should contain a list of instances of the 
-    book model. Only those books should be included which have been loaned by the user.
+    bookcopy model. Only those books should be included which have been loaned by the user.
     '''
     # START YOUR CODE HERE
     
-    
-    # END YOUR CODE HERE
+
+
     return render(request,template_name,context=context)
 
 @csrf_exempt
 @login_required
 def loanBookView(request):
-    profile = request.user.profile
     response_data={
         'message':None,
     }
@@ -66,7 +62,7 @@ def loanBookView(request):
     # START YOUR CODE HERE
     book_id = None # get the book id from post data
 
-    # END YOUR CODE HERE
+
     return JsonResponse(response_data)
 
 '''

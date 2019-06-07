@@ -16,9 +16,9 @@ class Book(models.Model):
 class BookCopy(models.Model):
     book=models.ForeignKey(Book,on_delete=models.CASCADE)
     borrow_date=models.DateField(null=True)
-    # 0 means available for issue, 1 means not
+    # 1 means available for issue, 0 means not
     status=models.BooleanField(default=False)
     borrower=models.ForeignKey(User,related_name='borrower',null=True,on_delete=models.SET_NULL)
     def __str__(self):
-        return f'{self.book_id} , {str(self.b_date)}'
+        return f'{self.book.title} , {str(self.borrow_date)}'
 
