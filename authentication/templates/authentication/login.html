@@ -1,0 +1,64 @@
+{% extends 'authentication/base.html' %}
+
+{% block title %}
+<title> LOGIN </title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Enter your Details:--></h1>
+	<input type="text" placeholder="Username" id="username" name="username">
+	<br>
+    <br>
+	<input type="password" placeholder="Password" id="password" name="password">
+	<br>
+    <br>
+	<input type="submit" id="bttn" value="Log In">
+</div>
+
+{% if user.is_authenticated %}
+<script>
+  document.location = "/";
+</script>
+{% endif %}
+
+<script>
+	$("#bttn").click(function() {
+		temp_username = document.getElementById("username").value;
+    
+    	temp_password = document.getElementById("password").value;
+
+    	if(temp_username === "" || temp_password === "" )
+    	{
+    		alert("Please fill all the fields");
+    	}
+    	else
+    	{
+    		$.ajax({
+    			url: "{% url 'login-requirement' %}",
+    			method: "POST",
+    			data: {
+    				username: temp_username,
+    				password: temp_password
+    			},
+    			success: function(data, status, xhr) {
+    				if(data["message"] == 1)
+    				{
+    					alert("logged In");
+    					document.location = "/";
+    				}
+    				else
+    				{
+    					alert("Invalid Username or Password");
+    				}
+    			},
+    			error: function(xhr,status,err) {
+    				alert("Something happened that i dont know");
+    			}
+    		});
+    	}
+	});
+</script>
+
+{% endblock %}

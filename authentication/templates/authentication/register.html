@@ -1,0 +1,76 @@
+{% extends 'authentication/base.html' %}
+
+{% block title %}
+<title> REGISTER </title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Enter your Details:</h1>
+	<input type="text" placeholder="Username" id="username" name="username">
+	<br>
+    <br>
+	<input type="password" placeholder="Password" id="password" name="password">
+    <br>
+    <br>
+    <input type="password" placeholder="type Password again" id="temp_password" name="temp_password">
+	<br>
+    <br>
+	<input type="submit" id="bttn" value="Log In">
+</div>
+
+{% if user.is_authenticated %}
+<script>
+  document.location = "/";
+</script>
+{% endif %}
+
+<script>
+	$("#bttn").click(function() {
+		temp_username = document.getElementById("username").value;
+    
+    	temp_password = document.getElementById("password").value;
+        temp_temp_password = document.getElementById("temp_password").value;
+
+        //alert(temp_password);
+        //alert(temp_username);
+        console.log(temp_username,temp_password,temp_temp_password);
+
+    	if(temp_username === "" || temp_password === "" ||temp_temp_password === "")
+    	{
+    		alert("Please fill all the fields");
+    	}
+        else if(temp_password != temp_temp_password)
+        {
+            alert("write password carefully")
+        }
+    	else
+    	{
+    		$.ajax({
+    			url: "{% url 'register-requirement' %}",
+    			method: "POST",
+    			data: {
+    				username_do: temp_username,
+    				password_do: temp_password
+    			},
+    			success: function(data, status, xhr) {
+    				if(data["message"] == 1)
+    				{
+    					alert("Account Created");
+    					document.location = "/";
+    				}
+    				else
+    				{
+    					alert("Unable to Create");
+    				}
+    			},
+    			error: function(xhr,status,err) {
+    				alert("Something happened that i dont know");
+    			}
+    		});
+    	}
+	});
+</script>
+
+{% endblock %}

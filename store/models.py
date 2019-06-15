@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 # Create your models here.
 class Book(models.Model):
     title=models.CharField(max_length=50)
@@ -7,7 +9,8 @@ class Book(models.Model):
     genre=models.CharField(max_length=50)
     description=models.TextField(null=True)
     mrp=models.PositiveIntegerField()
-    rating=models.FloatField(default=0.0)
+    rating = models.IntegerField(default = 0,validators=[MinValueValidator(0),MaxValueValidator(10)])
+    rated_by = models.PositiveIntegerField(default = 1)
     class Meta:
         ordering=('title',)
     def __str__(self):

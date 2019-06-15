@@ -4,6 +4,7 @@ from store.models import *
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import datetime
 
 # Create your views here.
 
@@ -17,7 +18,17 @@ def bookDetailView(request, bid):
         'num_available':None, # set this 1 if any copy of this book is available, otherwise 0
     }
     # START YOUR CODE HERE
-    
+    context['book']=Book.objects.get(id=bid)
+    #print(context['book'],bid)
+
+    try:
+        present = BookCopy.objects.get(book = Book.objects.get(id = bid))
+        #print(present)
+        context['num_available']=0
+    except:
+        #print("HI")
+        context['num_available']=1
+
     
     return render(request,template_name, context=context)
 
@@ -29,7 +40,31 @@ def bookListView(request):
     }
     get_data=request.GET
     # START YOUR CODE HERE
+
+    books = Book.objects.all()
+    print(books)
+
+    try:
+        temp_title = get_data['title']
+        books = books.filter(title = temp_title)
+        print(books)
+    except:
+        pass
+
+    try:
+        temp_author = get_data['author']
+        books = books.filter(author = temp_author)
+    except:
+        pass
+
+    try:
+        temp_genre = get_data['genre']
+        books = books.filter(genre = temp_genre)
+    except:
+        pass
+
     
+    context['books'] = books
     
     return render(request,template_name, context=context)
 
@@ -45,6 +80,12 @@ def viewLoanedBooks(request):
     '''
     # START YOUR CODE HERE
     
+    id_user = request.user
+
+
+    books = BookCopy.objects.filter(borrower = id_user)
+
+    context['books'] = books;
 
 
     return render(request,template_name,context=context)
@@ -62,6 +103,18 @@ def loanBookView(request):
     # START YOUR CODE HERE
     book_id = None # get the book id from post data
 
+    book_id = request.POST.get("bid")
+    print(book_id,"##")
+
+    try:
+        temp = BookCopy.objects.get(book = Book.objects.get(id = book_id))
+        print(temp)
+        response_data['message'] = 'failure'
+    except:
+        response_data['message'] = 1
+
+    if(response_data['message'] == 1):
+        BookCopy.objects.create(book = Book.objects.get(id = book_id), borrow_date = datetime.datetime.now().date(), borrower = request.user)
 
     return JsonResponse(response_data)
 
@@ -75,6 +128,72 @@ to make this feature complete
 @csrf_exempt
 @login_required
 def returnBookView(request):
-    pass
+
+    response_data={
+        'message':None,
+    }
+
+    book_id = request.POST.get("bid")
+    print(book_id)
+
+    try:
+        temp = BookCopy.objects.get(book = Book.objects.get(id = book_id))
+        BookCopy.objects.get(book = Book.objects.get(id = book_id)).delete()
+        response_data['message']=1
+    except:
+        response_data['message']='failure'
+
+    return JsonResponse(response_data)
 
 
+
+
+@csrf_exempt
+@login_required
+def rateBookView(request,bid):
+    template_name='store/rate.html'
+    #bid = request.POST.get("bid")
+    context={
+        'book':None, # set this to an instance of the required book
+        'num_available':None, # set this 1 if any copy of this book is available, otherwise 0
+    }
+    # START YOUR CODE HERE
+    context['book']=Book.objects.get(id=bid)
+    context['num_available']=0
+    print("hello",bid,context['book'],context['num_available'])
+    #print(context['book'],bid)
+    
+    return render(request,template_name, context=context)
+
+
+@csrf_exempt
+@login_required
+def ratingChangeBookView(request):
+    response_data={
+        'message':None,
+    }
+    print('calledit')
+    book_id = request.POST.get("bid")
+    
+    rating_change = request.POST.get("rating")
+    print(int(rating_change))
+    print(book_id,rating_change)
+    book = Book.objects.get(id =book_id)
+    current_rating = book.rating
+    current_ratedby = book.rated_by
+    current_ratedby = current_ratedby + 1
+    current_rating = current_rating + int(rating_change)
+    current_rating = int(current_rating/current_ratedby)
+
+    print(current_rating,current_ratedby)
+
+    book.rating = current_rating
+    book.rated_by = current_ratedby
+    book.save()
+
+    BookCopy.objects.get(book = Book.objects.get(id = book_id)).delete()
+    
+
+    response_data['message']=1
+
+    return JsonResponse(response_data)

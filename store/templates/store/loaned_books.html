@@ -29,15 +29,22 @@
         <td>{{copy.book.author}}</td>
         <td>{{copy.book.genre}}</td>
         <td>{{copy.borrow_date}}</td>
-        <td><button class="btn btn-primary" onclick="returnBook({{copy.book.bid}})">Return {{copy.book.title}}</button></td>
+        <td><button class="btn btn-primary" onclick="returnBook({{ copy.book.id }})">Return {{copy.book.title}}</button></td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 <script>
+
+var base_url=location.protocol + '//' + location.host + location.pathname;
 // Fill in this function by yourself. It should make a post call to the returnBookView and display an appropriate message
-function returnBook(bid){
-    ;
+function returnBook(bids){
+    var final_url=base_url.replace(/\/$/, "");
+    
+    if(bids!=""){
+        final_url=final_url+'/'+bids;
+    }
+    window.location.replace(final_url);   
 }
 </script>
 {% endblock %}

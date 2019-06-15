@@ -1,0 +1,74 @@
+{% extends "store/base.html" %}
+
+{% block title %}
+<title>{{book.title}} | Library</title>
+{% endblock %}
+
+{% block content %}
+<h2>Title: {{ book.title }}</h2>
+
+<dl>
+    <dt>Genre:</dt>
+    <dd>{{book.genre}}</dd>
+    <dt>Author:</dt>
+    <dd>{{book.author}}</dd>
+    <dt>Description:</dt>
+    <dd>{{book.description}}</dd>
+    <dt>Rating:</dt>
+    <dd>{{book.rating}}</dd>
+    <dt>MRP:</dt>
+    <dd>Rs.{{book.mrp}}</dd>
+    <dt>Available Copies:</dt>
+    <dd>{{num_available}}</dd>
+</dl>
+Give Your Ratings:
+<br>
+<input type="number" class="form-control" placeholder="Ratings" id="ratings" name="ratings">
+<br>
+<input type="submit" class="form-control" id="btn" value="Return Book">
+
+<script>
+
+$('#btn').click(function(){
+    console.log("myFunction called")
+    rating_value = document.getElementById("ratings").value;
+    if( rating_value == "")
+    {
+        alert("Please Fill Out the Field")
+    }
+    else if( rating_value > 10 || rating_value < 0)
+    {
+        alert("Please Fill rating btw 0 to 10 only")
+    }
+    else
+    {
+
+
+    $.ajax({
+        url:"{% url 'ratingchange-book' %}",
+        method:"POST",
+        data:{
+            bid: {{book.id}},
+            rating: rating_value,
+        },
+        success:function(data,status,xhr){
+            if(data['message']==1){
+                alert("Book Returned successfully");
+                window.location.replace("/books/");
+            }
+            else{
+                alert("Unable to return this book");
+            }
+        },
+        error:function(xhr,status,err){
+            alert("Some error occured");
+        }
+
+    })
+
+
+    }
+});
+
+</script>
+{% endblock %}
