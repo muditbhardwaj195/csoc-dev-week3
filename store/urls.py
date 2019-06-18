@@ -10,4 +10,6 @@ urlpatterns = [
     path('books/loaned/',viewLoanedBooks,name="view-loaned"),
     path('books/loan/',loanBookView,name="loan-book"),
     path('books/return',returnBookView,name="return-book"),
+    path('accounts/login',loginTemplate,name="login"),
+    path('accounts/register',registerTemplate,name="register"),
 ]

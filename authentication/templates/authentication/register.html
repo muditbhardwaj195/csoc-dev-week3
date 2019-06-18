@@ -48,11 +48,11 @@
     	else
     	{
     		$.ajax({
-    			url: "{% url 'register-requirement' %}",
+    			url: "{% url 'registerUser' %}",
     			method: "POST",
     			data: {
-    				username_do: temp_username,
-    				password_do: temp_password
+    				user: temp_username,
+    				pass: temp_password
     			},
     			success: function(data, status, xhr) {
     				if(data["message"] == 1)

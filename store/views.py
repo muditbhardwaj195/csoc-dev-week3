@@ -22,12 +22,12 @@ def bookDetailView(request, bid):
     #print(context['book'],bid)
 
     try:
-        present = BookCopy.objects.get(book = Book.objects.get(id = bid))
+        present = BookCopy.objects.get(book = Book.objects.get(id = bid),status = True)
         #print(present)
-        context['num_available']=0
+        context['num_available']=1
     except:
         #print("HI")
-        context['num_available']=1
+        context['num_available']=0
 
     
     return render(request,template_name, context=context)
@@ -83,7 +83,7 @@ def viewLoanedBooks(request):
     id_user = request.user
 
 
-    books = BookCopy.objects.filter(borrower = id_user)
+    books = BookCopy.objects.filter(borrower = id_user, status = False)
 
     context['books'] = books;
 
@@ -109,12 +109,20 @@ def loanBookView(request):
     try:
         temp = BookCopy.objects.get(book = Book.objects.get(id = book_id))
         print(temp)
-        response_data['message'] = 'failure'
+        if temp.status == True :
+            temp.borrow_date = datetime.datetime.now().date();
+            temp.borrower = request.user
+            temp.status = False
+            temp.save()
+            print('saved it')
+            response_data['message']= 1
+        else:
+            response_data['message'] = 'failure'
     except:
-        response_data['message'] = 1
+        response_data['message'] = 'failure'
 
-    if(response_data['message'] == 1):
-        BookCopy.objects.create(book = Book.objects.get(id = book_id), borrow_date = datetime.datetime.now().date(), borrower = request.user)
+    #if(response_data['message'] == 1):
+        #BookCopy.objects.create(book = Book.objects.get(id = book_id), borrow_date = datetime.datetime.now().date(), borrower = request.user)
 
     return JsonResponse(response_data)
 
@@ -191,9 +199,20 @@ def ratingChangeBookView(request):
     book.rated_by = current_ratedby
     book.save()
 
-    BookCopy.objects.get(book = Book.objects.get(id = book_id)).delete()
+    temp = BookCopy.objects.get(book = Book.objects.get(id = book_id))
+    temp.status = True
+    temp.save()
     
 
     response_data['message']=1
 
     return JsonResponse(response_data)
+
+def loginTemplate(request):
+    template_name = "authentication/login.html"
+
+    return render(request,template_name,{})
+
+def registerTemplate(request):
+    template_name = "authentication/register.html"
+    return render(request, template_name, {})
